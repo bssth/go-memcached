@@ -13,17 +13,17 @@ Implement as little or as much as you'd like.
 ```go
 type Getter interface {
 	RequestHandler
-	Get(string) (*Item, error)
+	Get(string) MemcachedResponse
 }
 
 type Setter interface {
 	RequestHandler
-	Set(*Item) error
+	Set(*Item) MemcachedResponse
 }
 
 type Deleter interface {
 	RequestHandler
-	Delete(string) error
+	Delete(string) MemcachedResponse
 }
 ```
 
