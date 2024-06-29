@@ -1,8 +1,8 @@
 package memcached
 
 import (
-	"io"
 	"fmt"
+	"io"
 )
 
 type MemcachedResponse interface {
@@ -14,9 +14,9 @@ type ItemResponse struct {
 }
 
 func (r *ItemResponse) WriteResponse(writer io.Writer) {
-	fmt.Fprintf(writer, StatusValue, r.Item.Key, r.Item.Flags, len(r.Item.Value))
-	writer.Write(r.Item.Value)
-	writer.Write(crlf)
+	_, _ = fmt.Fprintf(writer, StatusValue, r.Item.Key, r.Item.Flags, len(r.Item.Value))
+	_, _ = writer.Write(r.Item.Value)
+	_, _ = writer.Write(crlf)
 }
 
 type BulkResponse struct {
@@ -36,5 +36,5 @@ type ClientErrorResponse struct {
 }
 
 func (r *ClientErrorResponse) WriteResponse(writer io.Writer) {
-	fmt.Fprintf(writer, StatusClientError, r.Reason)
+	_, _ = fmt.Fprintf(writer, StatusClientError, r.Reason)
 }

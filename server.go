@@ -31,10 +31,10 @@ type Server struct {
 }
 
 type StorageCmd struct {
-	Key string
-	Flags int
+	Key     string
+	Flags   int
 	Exptime int64
-	Length int
+	Length  int
 	Noreply bool
 }
 
@@ -46,7 +46,7 @@ func (s *Server) newConn(rwc net.Conn) (c *conn, err error) {
 	return c, nil
 }
 
-// Start listening and accepting requests to this server.
+// ListenAndServe starts listening and accepting requests to this server.
 func (s *Server) ListenAndServe() error {
 	addr := s.Addr
 	if addr == "" {
@@ -87,14 +87,14 @@ func (c *conn) serve() {
 			if err == io.EOF {
 				return
 			}
-			c.rwc.WriteString(err.Error())
+			_, _ = c.rwc.WriteString(err.Error())
 			c.end()
 		}
 	}
 }
 
 func (c *conn) end() {
-	c.rwc.Flush()
+	_ = c.rwc.Flush()
 }
 
 func (c *conn) handleRequest() error {
@@ -120,7 +120,7 @@ func (c *conn) handleRequest() error {
 		} else {
 			c.server.Stats["get_misses"].(*CounterStat).Increment(1)
 		}
-		c.rwc.WriteString(StatusEnd)
+		_, _ = c.rwc.WriteString(StatusEnd)
 		c.end()
 	case 's':
 		switch line[1] {
@@ -148,7 +148,7 @@ func (c *conn) handleRequest() error {
 			if n != cmd.Length+2 {
 				response := &ClientErrorResponse{"bad chunk data"}
 				response.WriteResponse(c.rwc)
-				c.ReadLine() // Read out the rest of the line
+				_, _ = c.ReadLine() // Read out the rest of the line
 				return Error
 			}
 
@@ -156,7 +156,7 @@ func (c *conn) handleRequest() error {
 			if !bytes.HasSuffix(value, crlf) {
 				response := &ClientErrorResponse{"bad chunk data"}
 				response.WriteResponse(c.rwc)
-				c.ReadLine() // Read out the rest of the line
+				_, _ = c.ReadLine() // Read out the rest of the line
 				return Error
 			}
 
@@ -173,7 +173,7 @@ func (c *conn) handleRequest() error {
 					response.WriteResponse(c.rwc)
 					c.end()
 				} else {
-					c.rwc.WriteString(StatusStored)
+					_, _ = c.rwc.WriteString(StatusStored)
 					c.end()
 				}
 			}
@@ -182,9 +182,9 @@ func (c *conn) handleRequest() error {
 				return Error
 			}
 			for key, value := range c.server.Stats {
-				fmt.Fprintf(c.rwc, StatusStat, key, value)
+				_, _ = fmt.Fprintf(c.rwc, StatusStat, key, value)
 			}
-			c.rwc.WriteString(StatusEnd)
+			_, _ = c.rwc.WriteString(StatusEnd)
 			c.end()
 		default:
 			return Error
@@ -200,10 +200,10 @@ func (c *conn) handleRequest() error {
 		}
 		err := deleter.Delete(key)
 		if err != nil {
-			c.rwc.WriteString(StatusNotFound)
+			_, _ = c.rwc.WriteString(StatusNotFound)
 			c.end()
 		} else {
-			c.rwc.WriteString(StatusDeleted)
+			_, _ = c.rwc.WriteString(StatusDeleted)
 			c.end()
 		}
 	case 'q':
@@ -218,7 +218,7 @@ func (c *conn) handleRequest() error {
 }
 
 func (c *conn) Close() {
-	c.conn.Close()
+	_ = c.conn.Close()
 }
 
 func (c *conn) ReadLine() (line []byte, err error) {
@@ -249,7 +249,7 @@ func parseStorageLine(line []byte) *StorageCmd {
 	return cmd
 }
 
-// Initialize a new memcached Server
+// NewServer initializes a new memcached Server
 func NewServer(listen string, handler RequestHandler) *Server {
 	return &Server{listen, handler, NewStats()}
 }

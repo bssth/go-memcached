@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const TEN_SECONDS = time.Duration(10) * time.Second
+const TenSeconds = 10 * time.Second
 
 func TestIsExpiredZero(t *testing.T) {
 	item := &Item{}
@@ -16,7 +16,7 @@ func TestIsExpiredZero(t *testing.T) {
 
 func TestIsExpiredFuture(t *testing.T) {
 	item := &Item{
-		Expires: time.Now().Add(TEN_SECONDS),
+		Expires: time.Now().Add(TenSeconds),
 	}
 	if item.IsExpired() {
 		t.Error("Future shouldn't be expired")
@@ -25,7 +25,7 @@ func TestIsExpiredFuture(t *testing.T) {
 
 func TestIsExpiredPast(t *testing.T) {
 	item := &Item{
-		Expires: time.Now().Add(-TEN_SECONDS),
+		Expires: time.Now().Add(-TenSeconds),
 	}
 	if !item.IsExpired() {
 		t.Error("Past should be expired")
@@ -52,7 +52,7 @@ func TestSetExpiresTypical(t *testing.T) {
 	if !item.Expires.After(time.Now()) {
 		t.Error("Expires should be in the future.")
 	}
-	if item.Expires.Sub(time.Now()) >= TEN_SECONDS || item.Expires.Sub(time.Now()) < time.Duration(9)*time.Second {
+	if item.Expires.Sub(time.Now()) >= TenSeconds || item.Expires.Sub(time.Now()) < time.Duration(9)*time.Second {
 		t.Error("Expires should be > 9, and < 10 seconds")
 	}
 	if item.Ttl != 10 {
