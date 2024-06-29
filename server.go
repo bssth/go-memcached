@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"strconv"
+	"strings"
 )
 
 const VERSION = "0.0.0"
@@ -108,6 +109,7 @@ func (c *conn) handleRequest() error {
 	switch line[0] {
 	case 'g':
 		key := string(line[4:]) // get
+		key = strings.TrimSpace(key)
 		getter, ok := c.server.Handler.(Getter)
 		if !ok {
 			return Error
