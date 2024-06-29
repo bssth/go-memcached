@@ -5,7 +5,7 @@ Modeled similarly to the stdlib `net/http` package, `memcached` gives you a simp
 
 ## Install
 ```
-$ go get github.com/mattrobenolt/go-memcached
+$ go get github.com/bssth/go-memcached
 ```
 
 ## Interfaces
@@ -80,4 +80,4 @@ get Test
 ```
 
 ## Documentation
- * [http://godoc.org/github.com/mattrobenolt/go-memcached](http://godoc.org/github.com/mattrobenolt/go-memcached)
+ * [http://godoc.org/github.com/bssth/go-memcached](http://godoc.org/github.com/bssth/go-memcached)
