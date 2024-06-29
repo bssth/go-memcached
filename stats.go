@@ -83,13 +83,13 @@ const (
 func getRusage(usage usageType) float64 {
 	rusage := &syscall.Rusage{}
 	syscall.Getrusage(0, rusage)
-	var time *syscall.Timeval
+	var timeVal *syscall.Timeval
 	if usage == UserTime {
-		time = &rusage.Utime
+		timeVal = &rusage.Utime
 	} else {
-		time = &rusage.Stime
+		timeVal = &rusage.Stime
 	}
-	nsec := time.Nano()
+	nsec := timeVal.Nano()
 	return float64(nsec) / 1000000000
 }
 
