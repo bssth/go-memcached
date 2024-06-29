@@ -16,7 +16,7 @@ type Setter interface {
 	Set(*Item) MemcachedResponse
 }
 
-// A Delter is an object who responds to a simple
+// A Deleter is an object who responds to a simple
 // "delete" command.
 type Deleter interface {
 	RequestHandler
