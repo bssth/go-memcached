@@ -3,6 +3,17 @@
 ## What even is this?
 Modeled similarly to the stdlib `net/http` package, `memcached` gives you a simple interface to building your own memcached protocol compatible applications.
 
+## About this Fork
+This fork was created due to the original library being outdated, with 
+the last committed change dating year 2013. 
+
+The author of this fork has committed some changes to update the library and 
+ensure its compatibility with the modern Go versions and standarts. In addition, 
+a go.mod file has been added to manage dependencies more effectively.
+
+As of now, the library is functional and works seamlessly with the 
+current Go version.
+
 ## Install
 ```
 $ go get github.com/bssth/go-memcached
