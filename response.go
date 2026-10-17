@@ -31,6 +31,17 @@ func (r *BulkResponse) WriteResponse(writer io.Writer) {
 	}
 }
 
+// ServerErrorResponse tells the client that the server could not handle the
+// command, for example because a backend is down. Handlers can return it from
+// Get, Set and Delete.
+type ServerErrorResponse struct {
+	Reason string
+}
+
+func (r *ServerErrorResponse) WriteResponse(writer io.Writer) {
+	_, _ = fmt.Fprintf(writer, StatusServerErrorReason, r.Reason)
+}
+
 type ClientErrorResponse struct {
 	Reason string
 }

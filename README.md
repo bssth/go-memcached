@@ -19,6 +19,15 @@ current Go version.
 $ go get github.com/bssth/go-memcached
 ```
 
+## Supported commands
+
+`get` and `gets` with one or more keys (CAS is not supported, so `gets` replies like `get`),
+`set` (with `noreply`), `delete` (with `noreply`), `stats`, `version`, `quit`.
+
+Malformed commands get `CLIENT_ERROR`, values larger than `Server.MaxItemSize`
+(1 MB by default) get `SERVER_ERROR object too large for cache`.
+A panic while handling a command closes only that connection.
+
 ## Interfaces
 Implement as little or as much as you'd like.
 ```go
@@ -37,6 +46,17 @@ type Deleter interface {
 	Delete(string) MemcachedResponse
 }
 ```
+
+Return values:
+
+| Handler | `nil` | `*ServerErrorResponse` / `*ClientErrorResponse` | anything else |
+| --- | --- | --- | --- |
+| `Get` | miss | sent instead of the reply, without `END` | written as the value (e.g. `*ItemResponse`) |
+| `Set` | `STORED` | sent as is | sent as is |
+| `Delete` | `DELETED` | sent as is | `NOT_FOUND` |
+
+Use `&memcached.ServerErrorResponse{Reason: "..."}` when a backend fails.
+A negative or past expiration time gives an item that is already expired (`item.IsExpired()`).
 
 ## Example
 
@@ -91,4 +111,4 @@ get Test
 ```
 
 ## Documentation
- * [http://godoc.org/github.com/bssth/go-memcached](http://godoc.org/github.com/bssth/go-memcached)
+ * [https://pkg.go.dev/github.com/bssth/go-memcached](https://pkg.go.dev/github.com/bssth/go-memcached)

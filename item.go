@@ -25,9 +25,10 @@ func (i *Item) IsExpired() bool {
 }
 
 // SetExpires sets the Ttl and Expires based on the exptime send from
-// a client. This follows standard memcached rules, and an
+// a client. This follows standard memcached rules: an
 // exptime greater than 30 days is treated as an absolute
-// unix timestamp.
+// unix timestamp, and a negative exptime means the item
+// is already expired.
 func (i *Item) SetExpires(exptime int64) {
 	if exptime > MaxExptime {
 		i.Expires = time.Unix(exptime, 0)
@@ -35,6 +36,9 @@ func (i *Item) SetExpires(exptime int64) {
 	} else if exptime > 0 {
 		i.Ttl = int(exptime)
 		i.Expires = time.Now().Add(time.Duration(exptime) * time.Second)
+	} else if exptime < 0 {
+		i.Ttl = -1
+		i.Expires = time.Now().Add(-time.Second)
 	}
 }
 
