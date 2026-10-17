@@ -5,6 +5,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -42,6 +43,7 @@ func (f *FuncStat) String() string {
 type CounterStat struct {
 	Count        int
 	calculations chan int
+	mu           sync.Mutex // guards Count between the worker goroutine and readers
 }
 
 func (c *CounterStat) Increment(num int) {
@@ -49,6 +51,8 @@ func (c *CounterStat) Increment(num int) {
 }
 
 func (c *CounterStat) SetCount(num int) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.Count = num
 }
 
@@ -57,12 +61,16 @@ func (c *CounterStat) Decrement(num int) {
 }
 
 func (c *CounterStat) String() string {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	return strconv.Itoa(c.Count)
 }
 
 func (c *CounterStat) work() {
 	for num := range c.calculations {
+		c.mu.Lock()
 		c.Count = c.Count + num
+		c.mu.Unlock()
 	}
 }
 
